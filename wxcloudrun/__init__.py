@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-import wxcloudrun.mytask
+from wxcloudrun.mytask import TaskScheduler, CozeWithOAuthJWT
 import pymysql
 import config
 
@@ -19,8 +19,14 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(con
 db = SQLAlchemy(app)
 
 # 启动定时任务
-tsk = mytask.TaskScheduler()
-tsk.start_scheduler()
+#tsk = TaskScheduler(app)
+#tsk.start_scheduler()
+
+# CozeWithOAuthJWT
+coze = CozeWithOAuthJWT(config.coze_client_id,config.coze_private_key,config.coze_public_key_id)
+coze.set_app_context()
+coze.say_hi()
+
 
 # 加载控制器
 from wxcloudrun import views

@@ -2,12 +2,15 @@ from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import holidays
 from lunarcalendar import Lunar
-from flask import render_template, request, jsonify
+import sxtwl
+from cozepy import JWTOAuthApp, Coze, TokenAuth, Message, ChatStatus
+import config
+from cozepy.config import COZE_CN_BASE_URL
 
 # 定义调度器配置
 
 class TaskScheduler:
-    def __init__(self):
+    def __init__(self, app):
         self.SCHEDULER_API_ENABLED = True
         self.scheduler = BackgroundScheduler()
 
@@ -60,15 +63,16 @@ class HolidaySet:
     }
 
 
-    def get_solar_terms(self, month, day):
+    def get_solar_terms(self, solar_date):
         """
-        根据农历日期返回对应的节气
+        根据日期返回对应的节气
         """
-        # 遍历节气字典，寻找符合的节气
-        for term, (m, d) in self.SOLAR_TERMS.items():
-            if (month == m and day >= d) or (month > m):
-                return term
-        return None  # 如果没有找到对应节气
+        day = sxtwl.fromSolar(solar_date.year, solar_date.month, solar_date.day) 
+
+        if day.hasJieQi():
+            return day.getJieQi()  # 返回节气名称
+
+        return None
 
 
     def get_lunar_words(self, year, month, day):
@@ -132,15 +136,89 @@ class HolidaySet:
         lunar_date = Lunar(today.year, today.month, today.day)
 
         # 确定当前农历节气
-        term_name = self.get_solar_terms(lunar_date.month, lunar_date.day)
+        term_name = self.get_solar_terms(today)
+        # 农历日期
+        lunarwords = self.get_lunar_words(today.year, lunar_date.month, lunar_date.day)
+        # 季节
+        season = self.get_season(lunar_date.month, lunar_date.day)
 
-        # 汇总节日信息
-        result = {
-            "date": str(today),
-            "holiday": holiday_name if holiday_name else "",
-            "solarterm": term_name if term_name else "",
-            "lunarwords": self.get_lunar_words(today.year, lunar_date.month, lunar_date.day),
-            "season": self.get_season(lunar_date.month, lunar_date.day)
-        }
+        holiday_text = ''
+        if holiday_name:
+            holiday_text = f"{today} {holiday_name}"
+        elif term_name:
+            holiday_text = f"{lunarwords} {term_name}"
+        else:
+            holiday_text = f"{lunarwords} {season}"
 
-        return jsonify(result)
+        return holiday_text
+
+
+class CozeWithOAuthJWT:
+    def __init__(self, client_id, private_key, public_key_id):
+        self.client_id = client_id
+        self.private_key = private_key
+        self.public_key_id = public_key_id
+        self.oauth_app = self._create_jwt_oauth_app()
+        self.access_token = None
+        self.coze_client = self._create_coze_client()
+        
+    def _create_jwt_oauth_app(self):
+        """创建并返回一个JWT OAuth App实例"""
+        return JWTOAuthApp(
+            client_id=self.client_id,
+            private_key=self.private_key,
+            public_key_id=self.public_key_id,
+            base_url=COZE_CN_BASE_URL
+        )
+
+    def _get_access_token(self, ttl=3600):
+        """使用JWT OAuth App获取access token"""
+        return self.oauth_app.get_access_token(ttl)
+
+    def _create_coze_client(self, ttl=3600):
+        self.access_token = self._get_access_token(ttl)
+        self.coze_client = Coze(auth=TokenAuth(self.access_token.access_token), base_url=COZE_CN_BASE_URL)
+        return self.coze_client
+ 
+    def set_app_context(self):
+        """设置应用程序上下文，以确保Coze客户端正确运行"""
+        # 这里假设您有一个Flask应用程序实例名为app
+        # 请根据您的应用程序框架进行相应的上下文设置
+        # 例如，在Flask中，您可能会这样做：
+        # with self.app.app_context():
+        #     # 在这里执行需要应用程序上下文的操作
+        #     pass
+        pass
+
+    def _ensure_coze_client_not_expired(self):
+        if not self.coze_client :
+            self.coze_client = self._create_coze_client()
+        elif self.access_token.expires_in < datetime.datetime.now().timestamp() :
+            self.coze_client = self._create_coze_client()
+
+    def say_hi(self) :
+        self._ensure_coze_client_not_expired()
+
+        holiday_text = '早安祝福图'
+        
+        holiday_text = HolidaySet().holiday()
+        holiday_question = holiday_text + '的祝福图'
+
+        chat_poll = self.coze_client.chat.create_and_poll(
+            bot_id = config.coze_bot_id,
+            user_id = config.coze_user_id,
+            additional_messages=[
+                Message.build_user_question_text(holiday_question),
+            ],
+        )
+
+        for message in chat_poll.messages:
+            print(message.content, end="", flush=True)
+            #print(message.content.tojson().output.result[0].imageUrl)
+
+
+        if chat_poll.chat.status == ChatStatus.COMPLETED:
+            print()
+            print("token usage:", chat_poll.chat.usage.token_count)
+
+
