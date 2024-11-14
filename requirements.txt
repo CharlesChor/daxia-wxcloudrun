@@ -1,5 +1,5 @@
 click==8.0.3
-Flask==2.0.2
+Flask==2.2.5
 Flask-SQLAlchemy==2.5.1
 greenlet==1.1.2
 itsdangerous==2.0.1
@@ -8,6 +8,7 @@ MarkupSafe==2.0.1
 PyMySQL==1.0.2
 SQLAlchemy==1.4.29
 Werkzeug==2.0.2
-holidays
-lunarcalendar
+holidays==0.60
+lunarcalendar==0.0.9
+apscheduler==1.13.1
 

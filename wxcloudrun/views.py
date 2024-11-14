@@ -5,9 +5,7 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 import os,requests
-import datetime
-import holidays
-from lunarcalendar import Lunar
+from wxcloudrun.mytask import HolidaySet
 
 # 从环境变量中获取微信小程序的 AppID 和 AppSecret
 APPID = os.getenv('WECHAT_APPID')
@@ -194,26 +192,5 @@ def get_season(month, day):
 @app.route('/api/holiday', methods=['GET'])
 def holiday():
 
-    # 获取今天的日期
-    today = datetime.date.today()
-
-    # 判断国家法定节假日（以中国为例）
-    cn_holidays = holidays.China()
-    holiday_name = cn_holidays.get(today)
-
-    # 判断农历节气和假日
-    lunar_date = Lunar(today.year, today.month, today.day)
-    
-    # 确定当前农历节气
-    term_name = get_solar_terms(lunar_date.month, lunar_date.day)
-
-    # 汇总节日信息
-    result = {
-        "date": str(today),
-        "holiday": holiday_name if holiday_name else "",
-        "solarterm": term_name if term_name else "",
-        "lunarwords": get_lunar_words(today.year, lunar_date.month, lunar_date.day),
-        "season": get_season(lunar_date.month, lunar_date.day)
-    }
-
-    return jsonify(result)
+    holiday_set = HolidaySet()
+    return holiday_set.holiday()

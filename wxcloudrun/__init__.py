@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+import wxcloudrun.mytask
 import pymysql
 import config
 
@@ -16,6 +17,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(con
 
 # 初始化DB操作对象
 db = SQLAlchemy(app)
+
+# 启动定时任务
+tsk = mytask.TaskScheduler()
+tsk.start_scheduler()
 
 # 加载控制器
 from wxcloudrun import views
