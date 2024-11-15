@@ -216,7 +216,6 @@ class CozeWithOAuthJWT:
             print(message.content, end="", flush=True)
             #print(message.content.tojson().output.result[0].imageUrl)
 
-
         if chat_poll.chat.status == ChatStatus.COMPLETED:
             print()
             print("token usage:", chat_poll.chat.usage.token_count)
