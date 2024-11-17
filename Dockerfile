@@ -3,7 +3,7 @@
 # 已知alpine镜像与pytorch有兼容性问题会导致构建失败，如需使用pytorch请务必按需更换基础镜像。
 FROM alpine:3.13
 
-# 安装编译工具链，包括 gcc
+# 安装编译工具和 Python 开发包
 RUN apk add --no-cache \
     gcc \
     g++ \
@@ -11,8 +11,9 @@ RUN apk add --no-cache \
     libc-dev \
     libgcc \
     libstdc++ \
-    binutils
-    
+    binutils \
+    python3-dev  # 安装 Python 开发包
+
 # 容器默认时区为UTC，如需使用上海时间请启用以下时区设置命令
 # RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo Asia/Shanghai > /etc/timezone
 
