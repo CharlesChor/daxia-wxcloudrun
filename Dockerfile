@@ -12,6 +12,7 @@ RUN apk add --no-cache \
     libgcc \
     libstdc++ \
     binutils \
+    libffi-dev \ 
     python3-dev  # 安装 Python 开发包
 
     
