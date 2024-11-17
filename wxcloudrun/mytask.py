@@ -63,12 +63,9 @@ class CozeWithOAuthJWT:
         answer = '{}'
         for message in chat_poll.messages:
             if message.type == MessageType.ANSWER :
-                print(message.content)
                 answer = message.content
-        
+                print(message.content)
+                
         return answer
-
-            #print(message.content, end="", flush=True)
-            #print(message.content.tojson().output.result[0].imageUrl)
 
 
