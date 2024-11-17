@@ -8,9 +8,5 @@ MarkupSafe==2.0.1
 PyMySQL==1.0.2
 SQLAlchemy==1.4.29
 Werkzeug==2.0.2
-holidays==0.60
-lunarcalendar==0.0.9
-apscheduler==1.13.1
 cozepy==0.6.2
-sxtwl==2.0.7
 

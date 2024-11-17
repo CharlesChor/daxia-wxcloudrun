@@ -5,7 +5,6 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 import os,requests
-from wxcloudrun.mytask import HolidaySet
 from wxcloudrun import coze
 
 # 从环境变量中获取微信小程序的 AppID 和 AppSecret
@@ -106,7 +105,7 @@ def get_count():
     counter = Counters.query.filter(Counters.id == 1).first()
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
 
-@app.route('/api/holiday', methods=['GET'])
+@app.route('/api/greetings', methods=['GET'])
 def holiday():
 
      return coze.say_hi() 

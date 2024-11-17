@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from wxcloudrun.mytask import TaskScheduler, CozeWithOAuthJWT
+from wxcloudrun.mytask import CozeWithOAuthJWT
 import pymysql
 import config
 
