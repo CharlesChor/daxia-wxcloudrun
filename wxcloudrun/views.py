@@ -106,6 +106,6 @@ def get_count():
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
 
 @app.route('/api/greetings', methods=['GET'])
-def holiday():
+def get_greetings():
 
      return coze.say_hi() 
