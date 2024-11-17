@@ -66,8 +66,8 @@ class CozeWithOAuthJWT:
                 print(message.content)
                 answer = message.content
         
-        obj = json.loads(answer)
-        return obj
+        return answer
+
             #print(message.content, end="", flush=True)
             #print(message.content.tojson().output.result[0].imageUrl)
 
