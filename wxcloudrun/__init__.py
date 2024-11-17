@@ -17,14 +17,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(con
 # 初始化DB操作对象
 db = SQLAlchemy(app)
 
-# 启动定时任务
-#tsk = TaskScheduler(app)
-#tsk.start_scheduler()
-
 # CozeWithOAuthJWT
 coze = CozeWithOAuthJWT(config.coze_client_id,config.coze_private_key,config.coze_public_key_id)
 coze.set_app_context()
-#coze.say_hi()
 
 # 加载控制器
 from wxcloudrun import views

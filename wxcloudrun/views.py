@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import render_template, request, jsonify
+from flask import logging, render_template, request, jsonify
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -10,6 +10,10 @@ from wxcloudrun import coze
 # 从环境变量中获取微信小程序的 AppID 和 AppSecret
 APPID = os.getenv('WECHAT_APPID')
 APPSECRET = os.getenv('WECHAT_APPSECRET')
+
+# 初始化日志
+logger = logging.getLogger('log')
+
 
 @app.route('/')
 def index():
@@ -107,5 +111,7 @@ def get_count():
 
 @app.route('/api/greetings', methods=['GET'])
 def get_greetings():
-
-     return coze.say_hi() 
+    try :
+        return coze.say_hi() 
+    except Exception as e:
+        return make_err_response(str(e))
