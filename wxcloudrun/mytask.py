@@ -40,6 +40,7 @@ class CozeWithOAuthJWT:
         #     # 在这里执行需要应用程序上下文的操作
         #     pass
         pass
+        pass
 
     def _ensure_coze_client_not_expired(self):
         if not self.coze_client :
