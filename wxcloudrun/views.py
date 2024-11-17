@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask import logging, render_template, request, jsonify
+from flask import render_template, request, jsonify
 from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
@@ -11,8 +11,7 @@ from wxcloudrun import coze
 APPID = os.getenv('WECHAT_APPID')
 APPSECRET = os.getenv('WECHAT_APPSECRET')
 
-# 初始化日志
-logger = logging.getLogger('log')
+
 
 
 @app.route('/')
