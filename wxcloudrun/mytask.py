@@ -1,9 +1,10 @@
+import json
 from apscheduler.schedulers.background import BackgroundScheduler
 import datetime
 import holidays
 from lunarcalendar import Lunar
 import sxtwl
-from cozepy import JWTOAuthApp, Coze, TokenAuth, Message, ChatStatus
+from cozepy import JWTOAuthApp, Coze, MessageType, TokenAuth, Message, ChatStatus
 import config
 from cozepy.config import COZE_CN_BASE_URL
 
@@ -199,10 +200,7 @@ class CozeWithOAuthJWT:
     def say_hi(self) :
         self._ensure_coze_client_not_expired()
 
-        holiday_text = '早安祝福图'
-        
-        holiday_text = HolidaySet().holiday()
-        holiday_question = holiday_text + '的祝福图'
+        holiday_question = datetime.datetime.now().strftime('%Y年%m月%d日') + ' '
 
         chat_poll = self.coze_client.chat.create_and_poll(
             bot_id = config.coze_bot_id,
@@ -212,12 +210,15 @@ class CozeWithOAuthJWT:
             ],
         )
 
+        answer = '{}'
         for message in chat_poll.messages:
-            print(message.content, end="", flush=True)
+            if message.type == MessageType.ANSWER :
+                print(message.content)
+                answer = message.content
+        
+        obj = json.loads(answer)
+        return obj
+            #print(message.content, end="", flush=True)
             #print(message.content.tojson().output.result[0].imageUrl)
-
-        if chat_poll.chat.status == ChatStatus.COMPLETED:
-            print()
-            print("token usage:", chat_poll.chat.usage.token_count)
 
 

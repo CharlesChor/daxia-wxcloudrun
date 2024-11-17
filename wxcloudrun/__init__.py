@@ -14,7 +14,6 @@ app.config['DEBUG'] = config.DEBUG
 # 设定数据库链接
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(config.username, config.password,
                                                                              config.db_address)
-
 # 初始化DB操作对象
 db = SQLAlchemy(app)
 
@@ -25,8 +24,7 @@ db = SQLAlchemy(app)
 # CozeWithOAuthJWT
 coze = CozeWithOAuthJWT(config.coze_client_id,config.coze_private_key,config.coze_public_key_id)
 coze.set_app_context()
-coze.say_hi()
-
+#coze.say_hi()
 
 # 加载控制器
 from wxcloudrun import views
