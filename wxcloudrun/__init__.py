@@ -23,8 +23,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://{}:{}@{}/flask_demo'.format(con
 db = SQLAlchemy(app)
 
 # CozeWithOAuthJWT
-coze = CozeWithOAuthJWT(config.coze_client_id,config.coze_private_key,config.coze_public_key_id)
-coze.set_app_context()
+#coze = CozeWithOAuthJWT(config.coze_client_id,config.coze_private_key,config.coze_public_key_id)
+#coze.set_app_context()
 
 # 加载控制器
 from wxcloudrun import views
