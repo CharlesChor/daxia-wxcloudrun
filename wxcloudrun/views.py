@@ -5,7 +5,7 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 import os,requests
-from wxcloudrun import coze
+#from wxcloudrun import coze
 
 # 从环境变量中获取微信小程序的 AppID 和 AppSecret
 APPID = os.getenv('WECHAT_APPID')
@@ -108,9 +108,9 @@ def get_count():
     counter = Counters.query.filter(Counters.id == 1).first()
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
 
-@app.route('/api/greetings', methods=['GET'])
-def get_greetings():
-    try :
-        return coze.say_hi() 
-    except Exception as e:
-        return make_err_response(str(e))
+#@app.route('/api/greetings', methods=['GET'])
+#def get_greetings():
+#    try :
+#        return coze.say_hi() 
+#    except Exception as e:
+#        return make_err_response(str(e))
