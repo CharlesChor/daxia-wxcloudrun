@@ -9,4 +9,4 @@ PyMySQL==1.0.2
 SQLAlchemy==1.4.29
 Werkzeug>=2.0.2
 cozepy>=0.6.2
-
+xmltodict>=0.14.0
