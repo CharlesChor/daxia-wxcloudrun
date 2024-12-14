@@ -5,6 +5,11 @@ from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
 import os,requests
+from flask import Flask, request, make_response
+import hashlib
+import xmltodict
+
+import time
 #from wxcloudrun import coze
 
 # 从环境变量中获取微信小程序的 AppID 和 AppSecret
@@ -107,6 +112,53 @@ def get_count():
     """
     counter = Counters.query.filter(Counters.id == 1).first()
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
+
+# 微信的token令牌，需要与微信公众号后台配置的Token一致
+WECHAT_TOKEN = "daxia_token_for_wx"
+
+@app.route('/wechat', methods=['GET', 'POST'])
+def wechat():
+    if request.method == 'GET':
+        # 验证微信公众号的请求
+        signature = request.args.get('signature')
+        timestamp = request.args.get('timestamp')
+        nonce = request.args.get('nonce')
+        echostr = request.args.get('echostr')
+        token = WECHAT_TOKEN
+        tmp_list = [token, timestamp, nonce]
+        tmp_list.sort()
+        tmp_str = ''.join(tmp_list)
+        tmp_str = hashlib.sha1(tmp_str.encode()).hexdigest()
+        if tmp_str == signature:
+            return make_response(echostr)
+        else:
+            return "验证失败"
+    else:
+        # 处理POST请求，接收微信消息
+        xml = request.data
+        req = xmltodict.parse(xml)['xml']
+        if req.get('MsgType') == 'text':
+            # 如果接收到的是文本消息，则回复相同的文本消息
+            resp = {
+                'ToUserName': req.get('FromUserName'),
+                'FromUserName': req.get('ToUserName'),
+                'CreateTime': int(time.time()),
+                'MsgType': 'text',
+                'Content': req.get('Content')
+            }
+            xml = xmltodict.unparse({'xml': resp})
+            return xml
+        else:
+            # 如果接收到的不是文本消息，则回复默认消息
+            resp = {
+                'ToUserName': req.get('FromUserName', ''),
+                'FromUserName': req.get('ToUserName', ''),
+                'CreateTime': int(time.time()),
+                'MsgType': 'text',
+                'Content': 'I LOVE ITCAST'
+            }
+            xml = xmltodict.unparse({'xml': resp})
+            return xml
 
 #@app.route('/api/greetings', methods=['GET'])
 #def get_greetings():
