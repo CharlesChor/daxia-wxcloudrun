@@ -137,6 +137,7 @@ def wechat():
         # 处理POST请求，接收微信消息
         xml = request.data
         req = xmltodict.parse(xml)['xml']
+        print("req=",str(req))
         if req.get('MsgType') == 'text':
             # 如果接收到的是文本消息，则回复相同的文本消息
             resp = {
